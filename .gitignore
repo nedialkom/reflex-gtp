@@ -5,6 +5,7 @@ assets/external/
 .states
 *.py[cod]
 .DS_Store
+.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
