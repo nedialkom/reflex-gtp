@@ -2,6 +2,9 @@ import asyncio
 import reflex as rx
 from typing import List
 
+from pydantic.v1.datetime_parse import parse_time
+
+from . import ai
 
 class ChatMessage(rx.Base):
     message: str
@@ -24,6 +27,21 @@ class ChatState(rx.State):
             )
         )
 
+    def get_gtp_messages(self):
+        gtp_messages=[{
+            'role': 'system',
+            'content': 'You are an expert at creating recipies like an elite chief. Respond in markdown'
+        }]
+        for chat_message in self.messages:
+            role='user'
+            if chat_message.is_bot:
+                role='system'
+            gtp_messages.append({
+                'role': role,
+                'content': chat_message.message
+            })
+        return gtp_messages
+
     async def handle_submit(self, form_data:dict):
         print(form_data)
         user_message = form_data.get('message')
@@ -31,7 +49,8 @@ class ChatState(rx.State):
             self.did_submit = True
             self.append_message(user_message, is_bot=False)
             yield
-            await asyncio.sleep(2)
+            gtp_messages = self.get_gtp_messages()
+            bot_response = ai.get_llm_response(gtp_messages)
             self.did_submit = False
-            self.append_message(user_message, is_bot=True)
+            self.append_message(bot_response, is_bot=True)
             yield
