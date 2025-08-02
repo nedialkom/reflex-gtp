@@ -2,3 +2,4 @@
 reflex==0.8.3
 python-decouple
 openai
+psycopg2-binary
