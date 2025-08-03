@@ -33,7 +33,8 @@ def chat_page():
         rx.vstack(
             rx.hstack(
             rx.heading("Chat Here", size="5"),
-                rx.button("+ New chat", on_click=ChatState.clear_and_start_new),
+                rx.cond(ChatState.not_found,"Not found", "Found"),
+                rx.button("+ New chat", on_click=ChatState.create_new_and_redirect),
             ),
             rx.box(
                 rx.foreach(ChatState.messages, message_box),
